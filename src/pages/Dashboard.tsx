@@ -4,13 +4,34 @@ import { useLearning } from '@/contexts/LearningContext';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
   const { currentClass, setCurrentSubject, getProgress } = useLearning();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
-  if (!currentClass) {
-    return <div>Loading...</div>;
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate('/auth');
+    } else {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !currentClass) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   const handleSubjectClick = (subjectId: string) => {
