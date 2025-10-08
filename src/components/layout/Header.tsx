@@ -12,7 +12,7 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 font-bold text-xl gradient-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 font-bold text-xl text-primary hover:opacity-80 transition-opacity"
         >
           <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center shadow-glow">
             <GraduationCap className="w-6 h-6 text-white" />

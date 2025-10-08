@@ -30,7 +30,7 @@ const Dashboard = () => {
         >
           <div className="flex items-center gap-3 mb-2">
             <Sparkles className="w-8 h-8 text-primary animate-float" />
-            <h1 className="text-4xl font-bold gradient-primary bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-primary">
               Welcome Back!
             </h1>
           </div>
