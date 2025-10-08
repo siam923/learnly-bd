@@ -41,6 +41,14 @@ import {
   type MDXEditorMethods,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+import {
+  QuizEditorAdapter,
+  VideoEmbedEditorAdapter,
+  MathPuzzleEditorAdapter,
+  PhysicsSimulatorEditorAdapter,
+  PeriodicTableEditorAdapter,
+  AngleVisualizerEditorAdapter,
+} from "./mdx-editors/EditorAdapters";
 
 // Define JSX component descriptors for the editor
 const jsxComponentDescriptors = [
@@ -52,7 +60,7 @@ const jsxComponentDescriptors = [
       { name: 'questions', type: 'expression' as const }
     ],
     hasChildren: false,
-    Editor: () => null
+    Editor: QuizEditorAdapter
   },
   {
     name: 'VideoEmbed',
@@ -63,7 +71,7 @@ const jsxComponentDescriptors = [
       { name: 'title', type: 'string' as const }
     ],
     hasChildren: false,
-    Editor: () => null
+    Editor: VideoEmbedEditorAdapter
   },
   {
     name: 'MathPuzzle',
@@ -75,7 +83,7 @@ const jsxComponentDescriptors = [
       { name: 'hint', type: 'string' as const }
     ],
     hasChildren: false,
-    Editor: () => null
+    Editor: MathPuzzleEditorAdapter
   },
   {
     name: 'PhysicsSimulator',
@@ -86,7 +94,7 @@ const jsxComponentDescriptors = [
       { name: 'title', type: 'string' as const }
     ],
     hasChildren: false,
-    Editor: () => null
+    Editor: PhysicsSimulatorEditorAdapter
   },
   {
     name: 'PeriodicTableVisualizer',
@@ -96,7 +104,7 @@ const jsxComponentDescriptors = [
       { name: 'highlightElement', type: 'string' as const }
     ],
     hasChildren: false,
-    Editor: () => null
+    Editor: PeriodicTableEditorAdapter
   },
   {
     name: 'AngleVisualizer',
@@ -106,7 +114,7 @@ const jsxComponentDescriptors = [
       { name: 'initialAngle', type: 'number' as const }
     ],
     hasChildren: false,
-    Editor: () => null
+    Editor: AngleVisualizerEditorAdapter
   }
 ];
 
