@@ -8,8 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, BookOpen, FolderOpen, FileText } from "lucide-react";
+import { Plus, BookOpen, FolderOpen, FileText, GraduationCap } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LessonEditor } from "@/components/admin/LessonEditor";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -159,7 +160,7 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="classes">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="classes">
                   <BookOpen className="w-4 h-4 mr-2" />
                   Classes
@@ -171,6 +172,10 @@ const Admin = () => {
                 <TabsTrigger value="chapters">
                   <FileText className="w-4 h-4 mr-2" />
                   Chapters
+                </TabsTrigger>
+                <TabsTrigger value="lessons">
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Lessons
                 </TabsTrigger>
               </TabsList>
 
@@ -284,6 +289,20 @@ const Admin = () => {
                         Create Chapter
                       </Button>
                     </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="lessons" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create/Edit Lessons</CardTitle>
+                    <CardDescription>
+                      Use the powerful MDX editor to create interactive lessons with math, code, and custom components
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <LessonEditor chapters={chapters} />
                   </CardContent>
                 </Card>
               </TabsContent>

@@ -131,3 +131,25 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-glow);
   }
 }
+
+/* MDX Editor custom styles */
+.mdxeditor {
+  @apply bg-background text-foreground;
+}
+
+.mdxeditor-toolbar {
+  @apply bg-muted/50 border-border;
+}
+
+.mdxeditor-toolbar button {
+  @apply text-foreground hover:bg-accent;
+}
+
+/* Math equation styles */
+.katex {
+  font-size: 1.1em;
+}
+
+.katex-display {
+  @apply my-4;
+}
