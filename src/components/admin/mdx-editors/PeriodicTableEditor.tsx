@@ -1,17 +1,53 @@
-import { ComponentEditorWrapper } from "./ComponentEditorWrapper";
+import { useState } from "react";
+import { EditableComponentWrapper } from "./EditableComponentWrapper";
 import { FlaskConical } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface PeriodicTableEditorProps {
   highlightElement?: string;
+  onUpdate?: (props: { highlightElement?: string }) => void;
 }
 
 export const PeriodicTableEditor = ({
   highlightElement,
+  onUpdate,
 }: PeriodicTableEditorProps) => {
+  const [editElement, setEditElement] = useState(highlightElement || "");
+
+  const handleUpdate = () => {
+    onUpdate?.({
+      highlightElement: editElement || undefined,
+    });
+  };
+
+  const editForm = (
+    <div className="space-y-3">
+      <div>
+        <Label htmlFor="element-symbol" className="text-xs">
+          Highlighted Element Symbol (Optional)
+        </Label>
+        <Input
+          id="element-symbol"
+          value={editElement}
+          onChange={(e) => setEditElement(e.target.value.toUpperCase())}
+          placeholder="e.g., H, He, Li, C, O"
+          className="mt-1 uppercase"
+          maxLength={2}
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Enter chemical symbol (1-2 letters)
+        </p>
+      </div>
+    </div>
+  );
+
   return (
-    <ComponentEditorWrapper 
+    <EditableComponentWrapper
       componentName="PeriodicTableVisualizer"
       icon={<FlaskConical className="h-5 w-5" />}
+      editForm={editForm}
+      onUpdate={handleUpdate}
     >
       <div className="space-y-2">
         <p className="font-medium text-foreground">Interactive Periodic Table</p>
@@ -24,6 +60,6 @@ export const PeriodicTableEditor = ({
           </div>
         )}
       </div>
-    </ComponentEditorWrapper>
+    </EditableComponentWrapper>
   );
 };
