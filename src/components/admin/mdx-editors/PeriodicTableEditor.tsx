@@ -1,5 +1,5 @@
 import { ComponentEditorWrapper } from "./ComponentEditorWrapper";
-import { Microscope } from "lucide-react";
+import { FlaskConical } from "lucide-react";
 
 interface PeriodicTableEditorProps {
   highlightElement?: string;
@@ -9,17 +9,20 @@ export const PeriodicTableEditor = ({
   highlightElement,
 }: PeriodicTableEditorProps) => {
   return (
-    <ComponentEditorWrapper componentName="PeriodicTableVisualizer">
-      <div className="flex items-start gap-3">
-        <Microscope className="h-5 w-5 text-primary mt-0.5" />
-        <div className="flex-1">
-          <p className="text-sm">Periodic Table Visualizer</p>
-          {highlightElement && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Highlighting: {highlightElement}
-            </p>
-          )}
-        </div>
+    <ComponentEditorWrapper 
+      componentName="PeriodicTableVisualizer"
+      icon={<FlaskConical className="h-5 w-5" />}
+    >
+      <div className="space-y-2">
+        <p className="font-medium text-foreground">Interactive Periodic Table</p>
+        {highlightElement && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Highlighted Element:</span>
+            <span className="px-2 py-1 rounded bg-primary/10 text-primary text-xs font-medium font-mono uppercase">
+              {highlightElement}
+            </span>
+          </div>
+        )}
       </div>
     </ComponentEditorWrapper>
   );

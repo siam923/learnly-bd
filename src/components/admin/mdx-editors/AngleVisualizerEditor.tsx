@@ -9,17 +9,20 @@ export const AngleVisualizerEditor = ({
   initialAngle,
 }: AngleVisualizerEditorProps) => {
   return (
-    <ComponentEditorWrapper componentName="AngleVisualizer">
-      <div className="flex items-start gap-3">
-        <Ruler className="h-5 w-5 text-primary mt-0.5" />
-        <div className="flex-1">
-          <p className="text-sm">Angle Visualizer</p>
-          {initialAngle !== undefined && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Initial angle: {initialAngle}°
-            </p>
-          )}
-        </div>
+    <ComponentEditorWrapper 
+      componentName="AngleVisualizer"
+      icon={<Ruler className="h-5 w-5" />}
+    >
+      <div className="space-y-2">
+        <p className="font-medium text-foreground">Interactive Angle Visualizer</p>
+        {initialAngle !== undefined && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Initial Angle:</span>
+            <span className="px-2 py-1 rounded bg-primary/10 text-primary text-xs font-medium font-mono">
+              {initialAngle}°
+            </span>
+          </div>
+        )}
       </div>
     </ComponentEditorWrapper>
   );

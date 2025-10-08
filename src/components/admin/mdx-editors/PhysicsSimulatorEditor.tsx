@@ -11,12 +11,19 @@ export const PhysicsSimulatorEditor = ({
   title,
 }: PhysicsSimulatorEditorProps) => {
   return (
-    <ComponentEditorWrapper componentName="PhysicsSimulator">
-      <div className="flex items-start gap-3">
-        <Atom className="h-5 w-5 text-primary mt-0.5" />
-        <div className="flex-1">
-          {title && <p className="font-medium mb-1">{title}</p>}
-          <p className="text-xs text-muted-foreground">Type: {type}</p>
+    <ComponentEditorWrapper 
+      componentName="PhysicsSimulator"
+      icon={<Atom className="h-5 w-5" />}
+    >
+      <div className="space-y-2">
+        {title && (
+          <p className="font-medium text-foreground">{title}</p>
+        )}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Simulation Type:</span>
+          <span className="px-2 py-1 rounded bg-primary/10 text-primary text-xs font-medium font-mono">
+            {type}
+          </span>
         </div>
       </div>
     </ComponentEditorWrapper>
