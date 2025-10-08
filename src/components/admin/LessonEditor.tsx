@@ -27,6 +27,7 @@ import {
   codeMirrorPlugin,
   diffSourcePlugin,
   toolbarPlugin,
+  jsxPlugin,
   UndoRedo,
   BoldItalicUnderlineToggles,
   BlockTypeSelect,
@@ -40,6 +41,74 @@ import {
   type MDXEditorMethods,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+
+// Define JSX component descriptors for the editor
+const jsxComponentDescriptors = [
+  {
+    name: 'Quiz',
+    kind: 'flow' as const,
+    source: './components/interactive/Quiz',
+    props: [
+      { name: 'questions', type: 'expression' as const }
+    ],
+    hasChildren: false,
+    Editor: () => null
+  },
+  {
+    name: 'VideoEmbed',
+    kind: 'flow' as const,
+    source: './components/interactive/VideoEmbed',
+    props: [
+      { name: 'url', type: 'string' as const },
+      { name: 'title', type: 'string' as const }
+    ],
+    hasChildren: false,
+    Editor: () => null
+  },
+  {
+    name: 'MathPuzzle',
+    kind: 'flow' as const,
+    source: './components/interactive/MathPuzzle',
+    props: [
+      { name: 'problem', type: 'string' as const },
+      { name: 'answer', type: 'number' as const },
+      { name: 'hint', type: 'string' as const }
+    ],
+    hasChildren: false,
+    Editor: () => null
+  },
+  {
+    name: 'PhysicsSimulator',
+    kind: 'flow' as const,
+    source: './components/interactive/PhysicsSimulator',
+    props: [
+      { name: 'type', type: 'string' as const },
+      { name: 'title', type: 'string' as const }
+    ],
+    hasChildren: false,
+    Editor: () => null
+  },
+  {
+    name: 'PeriodicTableVisualizer',
+    kind: 'flow' as const,
+    source: './components/interactive/PeriodicTableVisualizer',
+    props: [
+      { name: 'highlightElement', type: 'string' as const }
+    ],
+    hasChildren: false,
+    Editor: () => null
+  },
+  {
+    name: 'AngleVisualizer',
+    kind: 'flow' as const,
+    source: './components/interactive/AngleVisualizer',
+    props: [
+      { name: 'initialAngle', type: 'number' as const }
+    ],
+    hasChildren: false,
+    Editor: () => null
+  }
+];
 
 interface LessonEditorProps {
   chapters: any[];
@@ -255,7 +324,8 @@ export const LessonEditor = ({ chapters }: LessonEditorProps) => {
                     cpp: "C++",
                   },
                 }),
-                diffSourcePlugin({ viewMode: "rich-text" }),
+                jsxPlugin({ jsxComponentDescriptors }),
+                diffSourcePlugin({ viewMode: "rich-text", diffMarkdown: '' }),
                 toolbarPlugin({
                   toolbarContents: () => (
                     <>
