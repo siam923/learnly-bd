@@ -1,23 +1,64 @@
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { LessonRenderer } from '@/components/lesson/LessonRenderer';
-import { useLearning } from '@/contexts/LearningContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useLessonProgress } from '@/hooks/useLessonProgress';
+
+interface Lesson {
+  id: string;
+  title: string;
+  content: string;
+  duration: number;
+}
 
 const LessonView = () => {
-  const { currentLesson, markLessonComplete } = useLearning();
+  const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [userId, setUserId] = useState<string | undefined>();
+  const { isCompleted, markComplete, loading: progressLoading } = useLessonProgress(userId);
 
-  if (!currentLesson) {
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id);
+    };
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    if (!lessonId) return;
+
+    const fetchLesson = async () => {
+      const { data, error } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('id', lessonId)
+        .single();
+
+      if (error) {
+        console.error('Failed to fetch lesson:', error);
+        return;
+      }
+
+      setLesson(data);
+    };
+
+    fetchLesson();
+  }, [lessonId]);
+
+  if (!lesson || progressLoading) {
     return <div>Loading...</div>;
   }
 
-  const handleComplete = () => {
-    markLessonComplete(currentLesson.id);
-    toast.success('Lesson completed! Great job! 🎉');
+  const completed = isCompleted(lesson.id);
+
+  const handleComplete = async () => {
+    await markComplete(lesson.id);
     navigate('/chapters');
   };
 
@@ -39,10 +80,10 @@ const LessonView = () => {
           >
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h1 className="text-4xl font-bold text-foreground mb-2">{currentLesson.title}</h1>
-                <p className="text-muted-foreground">{currentLesson.duration} minutes</p>
+                <h1 className="text-4xl font-bold text-foreground mb-2">{lesson.title}</h1>
+                <p className="text-muted-foreground">{lesson.duration} minutes</p>
               </div>
-              {currentLesson.completed && (
+              {completed && (
                 <div className="flex items-center gap-2 px-4 py-2 bg-success/20 border-2 border-success rounded-lg">
                   <CheckCircle2 className="w-5 h-5 text-success" />
                   <span className="text-success font-semibold">Completed</span>
@@ -57,10 +98,10 @@ const LessonView = () => {
             transition={{ delay: 0.2 }}
             className="mb-8"
           >
-            <LessonRenderer content={currentLesson.content} />
+            <LessonRenderer content={lesson.content} />
           </motion.div>
 
-          {!currentLesson.completed && (
+          {!completed && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
