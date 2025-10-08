@@ -1,3 +1,9 @@
+/**
+ * Editor Adapters - Bridge between MDXEditor and custom component editors
+ * These adapters parse MDX node attributes and pass them to the visual editors
+ */
+
+import { parseMDXAttributes, getAttribute } from "@/lib/mdx/utils";
 import { QuizEditor } from "./QuizEditor";
 import { VideoEmbedEditor } from "./VideoEmbedEditor";
 import { MathPuzzleEditor } from "./MathPuzzleEditor";
@@ -5,57 +11,60 @@ import { PhysicsSimulatorEditor } from "./PhysicsSimulatorEditor";
 import { PeriodicTableEditor } from "./PeriodicTableEditor";
 import { AngleVisualizerEditor } from "./AngleVisualizerEditor";
 
-// Adapter components that match MDXEditor's JsxEditorProps interface
-export const QuizEditorAdapter = (props: any) => {
-  const questions = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "questions"
-  )?.value;
+interface EditorAdapterProps {
+  mdastNode?: any;
+}
+
+/**
+ * Quiz component adapter
+ */
+export const QuizEditorAdapter = ({ mdastNode }: EditorAdapterProps) => {
+  const questions = getAttribute(mdastNode, "questions");
   return <QuizEditor questions={questions} />;
 };
 
-export const VideoEmbedEditorAdapter = (props: any) => {
-  const url = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "url"
-  )?.value;
-  const title = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "title"
-  )?.value;
-  return <VideoEmbedEditor url={url} title={title} />;
+/**
+ * VideoEmbed component adapter
+ */
+export const VideoEmbedEditorAdapter = ({ mdastNode }: EditorAdapterProps) => {
+  const props = parseMDXAttributes(mdastNode);
+  return <VideoEmbedEditor url={props.url} title={props.title} />;
 };
 
-export const MathPuzzleEditorAdapter = (props: any) => {
-  const problem = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "problem"
-  )?.value;
-  const answer = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "answer"
-  )?.value;
-  const hint = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "hint"
-  )?.value;
-  return <MathPuzzleEditor problem={problem} answer={answer} hint={hint} />;
+/**
+ * MathPuzzle component adapter
+ */
+export const MathPuzzleEditorAdapter = ({ mdastNode }: EditorAdapterProps) => {
+  const props = parseMDXAttributes(mdastNode);
+  return (
+    <MathPuzzleEditor
+      problem={props.problem}
+      answer={props.answer}
+      hint={props.hint}
+    />
+  );
 };
 
-export const PhysicsSimulatorEditorAdapter = (props: any) => {
-  const type = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "type"
-  )?.value;
-  const title = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "title"
-  )?.value;
-  return <PhysicsSimulatorEditor type={type} title={title} />;
+/**
+ * PhysicsSimulator component adapter
+ */
+export const PhysicsSimulatorEditorAdapter = ({ mdastNode }: EditorAdapterProps) => {
+  const props = parseMDXAttributes(mdastNode);
+  return <PhysicsSimulatorEditor type={props.type} title={props.title} />;
 };
 
-export const PeriodicTableEditorAdapter = (props: any) => {
-  const highlightElement = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "highlightElement"
-  )?.value;
+/**
+ * PeriodicTable component adapter
+ */
+export const PeriodicTableEditorAdapter = ({ mdastNode }: EditorAdapterProps) => {
+  const highlightElement = getAttribute(mdastNode, "highlightElement");
   return <PeriodicTableEditor highlightElement={highlightElement} />;
 };
 
-export const AngleVisualizerEditorAdapter = (props: any) => {
-  const initialAngle = props.mdastNode?.attributes?.find(
-    (attr: any) => attr.name === "initialAngle"
-  )?.value;
+/**
+ * AngleVisualizer component adapter
+ */
+export const AngleVisualizerEditorAdapter = ({ mdastNode }: EditorAdapterProps) => {
+  const initialAngle = getAttribute(mdastNode, "initialAngle");
   return <AngleVisualizerEditor initialAngle={initialAngle} />;
 };
