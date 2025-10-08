@@ -6,41 +6,17 @@ import { CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface MathPuzzleProps {
-  equation: string;
+  problem: string;
+  answer: number;
+  hint?: string;
 }
 
-export const MathPuzzle = ({ equation }: MathPuzzleProps) => {
+export const MathPuzzle = ({ problem, answer, hint }: MathPuzzleProps) => {
   const [userAnswer, setUserAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
-  // Parse the equation and calculate the answer
-  const parseEquation = (eq: string) => {
-    // Simple parser for equations like "2x + 3 = 11"
-    const parts = eq.split('=');
-    const rightSide = parseFloat(parts[1].trim());
-    
-    // Extract coefficient and constant from left side
-    const leftSide = parts[0].trim();
-    const match = leftSide.match(/(\d+)x\s*([+-])\s*(\d+)/);
-    
-    if (match) {
-      const coefficient = parseFloat(match[1]);
-      const operator = match[2];
-      const constant = parseFloat(match[3]);
-      
-      // Solve for x
-      if (operator === '+') {
-        return (rightSide - constant) / coefficient;
-      } else {
-        return (rightSide + constant) / coefficient;
-      }
-    }
-    return 0;
-  };
-
-  const correctAnswer = parseEquation(equation);
-  const isCorrect = submitted && parseFloat(userAnswer) === correctAnswer;
+  const isCorrect = submitted && parseFloat(userAnswer) === answer;
 
   const handleSubmit = () => {
     setSubmitted(true);
@@ -69,34 +45,31 @@ export const MathPuzzle = ({ equation }: MathPuzzleProps) => {
         </div>
 
         <div className="p-4 bg-secondary/50 rounded-lg">
-          <p className="text-2xl font-bold text-center font-mono">{equation}</p>
+          <p className="text-lg font-medium text-center">{problem}</p>
         </div>
 
-        {showHint && (
+        {hint && showHint && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             className="p-4 bg-accent/10 border-2 border-accent/30 rounded-lg"
           >
             <p className="text-sm text-muted-foreground">
-              <strong>Hint:</strong> Isolate the variable by performing the same operation on both sides of the equation!
+              <strong>Hint:</strong> {hint}
             </p>
           </motion.div>
         )}
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">x =</span>
-              <Input
-                type="number"
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                disabled={submitted}
-                placeholder="Your answer"
-                className="text-lg"
-              />
-            </div>
+            <Input
+              type="number"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              disabled={submitted}
+              placeholder="Your answer"
+              className="text-lg"
+            />
           </div>
         </div>
 
@@ -129,7 +102,7 @@ export const MathPuzzle = ({ equation }: MathPuzzleProps) => {
                   <>
                     <XCircle className="text-destructive" />
                     <span className="text-destructive">
-                      Not quite. The correct answer is x = {correctAnswer}
+                      Not quite. The correct answer is {answer}
                     </span>
                   </>
                 )}
