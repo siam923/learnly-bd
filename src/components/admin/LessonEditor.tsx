@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Save, Eye, Code } from "lucide-react";
 import { LessonRenderer } from "@/components/lesson/LessonRenderer";
+import { ComponentInserter } from "./ComponentInserter";
 
 // Dynamic import for MDXEditor to avoid SSR issues
 import {
@@ -82,6 +83,14 @@ export const LessonEditor = ({ chapters }: LessonEditorProps) => {
       setLessonDuration(lesson.duration.toString());
       setContent(lesson.content);
       setSelectedLessonId(lessonId);
+    }
+  };
+
+  const handleInsertComponent = (componentCode: string) => {
+    if (editorRef.current) {
+      const currentContent = content;
+      setContent(currentContent + componentCode);
+      editorRef.current.setMarkdown(currentContent + componentCode);
     }
   };
 
@@ -203,14 +212,21 @@ export const LessonEditor = ({ chapters }: LessonEditorProps) => {
 
         <TabsContent value="editor" className="mt-4">
           <Card className="p-4">
-            <div className="mb-4 p-4 bg-muted rounded-lg text-sm">
-              <h4 className="font-semibold mb-2">💡 Editor Guide:</h4>
-              <ul className="space-y-1">
-                <li>• Use toolbar for formatting, links, tables, and code blocks</li>
-                <li>• Math: Use $ for inline math, $$ for block math</li>
-                <li>• Components: Use angle brackets like {"<Quiz questions={[...]} />"}</li>
-                <li>• Available components: Quiz, VideoEmbed, MathPuzzle, PhysicsSimulator, PeriodicTableVisualizer, AngleVisualizer</li>
-              </ul>
+            <div className="mb-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="p-4 bg-muted rounded-lg text-sm flex-1">
+                  <h4 className="font-semibold mb-2">💡 Editor Guide:</h4>
+                  <ul className="space-y-1">
+                    <li>• Use toolbar for formatting, links, tables, and code blocks</li>
+                    <li>• Math: Use $ for inline math, $$ for block math</li>
+                    <li>• Click "Insert Component" to add interactive elements visually</li>
+                    <li>• Available: Quiz, VideoEmbed, MathPuzzle, PhysicsSimulator, PeriodicTable, AngleVisualizer</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <ComponentInserter onInsert={handleInsertComponent} />
+              </div>
             </div>
 
             <MDXEditor
