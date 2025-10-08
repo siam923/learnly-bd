@@ -15,39 +15,25 @@ import { LessonEditor } from "@/components/admin/LessonEditor";
 const Admin = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [chapters, setChapters] = useState<any[]>([]);
 
   useEffect(() => {
-    checkAdminAccess();
+    checkAuth();
     fetchData();
   }, []);
 
-  const checkAdminAccess = async () => {
+  const checkAuth = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
         return;
       }
-
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error || data?.role !== "admin") {
-        toast.error("Admin access required");
-        navigate("/dashboard");
-        return;
-      }
-
-      setIsAdmin(true);
+      // Mockup mode - allowing all authenticated users to access admin panel
     } catch (error) {
-      navigate("/dashboard");
+      navigate("/auth");
     } finally {
       setLoading(false);
     }
@@ -142,8 +128,6 @@ const Admin = () => {
     );
   }
 
-  if (!isAdmin) return null;
-
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="container mx-auto max-w-6xl py-8">
@@ -155,8 +139,8 @@ const Admin = () => {
 
         <Card className="border-2">
           <CardHeader>
-            <CardTitle className="text-3xl">Admin Panel</CardTitle>
-            <CardDescription>Manage classes, subjects, chapters, and lessons</CardDescription>
+            <CardTitle className="text-3xl">Admin Panel (Mockup Mode)</CardTitle>
+            <CardDescription>Manage classes, subjects, chapters, and lessons - Full access for testing</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="classes">
