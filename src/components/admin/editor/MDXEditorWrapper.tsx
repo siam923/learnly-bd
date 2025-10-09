@@ -1,9 +1,10 @@
-import { forwardRef } from "react";
+import { forwardRef, useRef } from "react";
 import { MDXEditor, type MDXEditorMethods } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { Card } from "@/components/ui/card";
 import { ComponentInserter } from "../ComponentInserter";
 import { createEditorPlugins } from "./MDXEditorConfig";
+import { useMarkdownPaste } from "@/hooks/useMarkdownPaste";
 
 interface MDXEditorWrapperProps {
   content: string;
@@ -15,8 +16,16 @@ export const MDXEditorWrapper = forwardRef<
   MDXEditorMethods,
   MDXEditorWrapperProps
 >(({ content, onChange, onInsertComponent }, ref) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useMarkdownPaste({
+    editorRef: ref as React.RefObject<MDXEditorMethods>,
+    containerRef,
+    onChange,
+  });
+
   return (
-    <Card className="p-4">
+    <Card className="p-4" ref={containerRef}>
       <div className="mb-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="p-4 bg-muted rounded-lg text-sm flex-1">
