@@ -5,15 +5,24 @@ import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 
 interface QuizProps {
-  question: string;
-  options: string[];
-  answer: number;
+  questions: Array<{
+    question: string;
+    options: string[];
+    correctAnswer: number;
+  }>;
 }
 
-export const Quiz = ({ question, options, answer }: QuizProps) => {
+export const Quiz = ({ questions }: QuizProps) => {
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
+
+  const currentQuestion = questions?.[currentQuestionIndex];
+  
+  if (!currentQuestion) {
+    return null;
+  }
 
   const handleSubmit = () => {
     if (selectedOption !== null) {
@@ -28,16 +37,39 @@ export const Quiz = ({ question, options, answer }: QuizProps) => {
     setShowExplanation(false);
   };
 
-  const isCorrect = selectedOption === answer;
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedOption(null);
+      setSubmitted(false);
+      setShowExplanation(false);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setSelectedOption(null);
+      setSubmitted(false);
+      setShowExplanation(false);
+    }
+  };
+
+  const isCorrect = selectedOption === currentQuestion.correctAnswer;
 
   return (
     <Card className="p-6 my-6 border-2 border-primary/20 bg-gradient-card">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-primary">Quick Quiz</h3>
-        <p className="text-foreground font-medium">{question}</p>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-primary">Quick Quiz</h3>
+          <span className="text-sm text-muted-foreground">
+            Question {currentQuestionIndex + 1} of {questions.length}
+          </span>
+        </div>
+        <p className="text-foreground font-medium">{currentQuestion.question}</p>
 
         <div className="space-y-3">
-          {options.map((option, index) => (
+          {currentQuestion.options.map((option, index) => (
             <motion.button
               key={index}
               whileHover={{ scale: 1.02 }}
@@ -46,7 +78,7 @@ export const Quiz = ({ question, options, answer }: QuizProps) => {
               disabled={submitted}
               className={`w-full p-4 rounded-lg text-left transition-all border-2 ${
                 submitted
-                  ? index === answer
+                  ? index === currentQuestion.correctAnswer
                     ? 'border-success bg-success/10'
                     : index === selectedOption
                     ? 'border-destructive bg-destructive/10'
@@ -60,8 +92,8 @@ export const Quiz = ({ question, options, answer }: QuizProps) => {
                 <span className="font-medium">{option}</span>
                 {submitted && (
                   <>
-                    {index === answer && <CheckCircle2 className="text-success" />}
-                    {index === selectedOption && index !== answer && (
+                    {index === currentQuestion.correctAnswer && <CheckCircle2 className="text-success" />}
+                    {index === selectedOption && index !== currentQuestion.correctAnswer && (
                       <XCircle className="text-destructive" />
                     )}
                   </>
@@ -103,9 +135,21 @@ export const Quiz = ({ question, options, answer }: QuizProps) => {
               </p>
             </motion.div>
 
-            <Button onClick={handleReset} variant="outline" className="w-full">
-              Try Again
-            </Button>
+            <div className="flex gap-2">
+              {currentQuestionIndex > 0 && (
+                <Button onClick={handlePrevious} variant="outline" className="flex-1">
+                  Previous
+                </Button>
+              )}
+              <Button onClick={handleReset} variant="outline" className="flex-1">
+                Try Again
+              </Button>
+              {currentQuestionIndex < questions.length - 1 && (
+                <Button onClick={handleNext} variant="default" className="flex-1">
+                  Next Question
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </div>
