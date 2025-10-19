@@ -153,3 +153,62 @@ All colors MUST be HSL.
 .katex-display {
   @apply my-4;
 }
+
+/* Prose styles for markdown content */
+.prose {
+  @apply text-foreground;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply text-foreground font-bold;
+}
+
+.prose p {
+  @apply text-foreground mb-4;
+}
+
+.prose strong {
+  @apply text-foreground font-bold;
+}
+
+.prose a {
+  @apply text-primary underline decoration-primary/30 hover:decoration-primary;
+}
+
+.prose code {
+  @apply bg-muted text-foreground px-1.5 py-0.5 rounded;
+}
+
+.prose pre {
+  @apply bg-muted text-foreground p-4 rounded-lg overflow-x-auto;
+}
+
+.prose ul,
+.prose ol {
+  @apply text-foreground;
+}
+
+.prose li {
+  @apply text-foreground;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground;
+}
+
+.prose table {
+  @apply text-foreground;
+}
+
+.prose thead {
+  @apply border-b border-border;
+}
+
+.prose tbody tr {
+  @apply border-b border-border;
+}
