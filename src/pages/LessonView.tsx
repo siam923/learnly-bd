@@ -20,6 +20,8 @@ const LessonView = () => {
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [userId, setUserId] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { isCompleted, markComplete, loading: progressLoading } = useLessonProgress(userId);
 
   useEffect(() => {
@@ -31,28 +33,86 @@ const LessonView = () => {
   }, []);
 
   useEffect(() => {
-    if (!lessonId) return;
+    if (!lessonId) {
+      setLoading(false);
+      return;
+    }
 
     const fetchLesson = async () => {
-      const { data, error } = await supabase
-        .from('lessons')
-        .select('*')
-        .eq('id', lessonId)
-        .single();
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('id', lessonId)
+          .maybeSingle();
 
-      if (error) {
-        console.error('Failed to fetch lesson:', error);
-        return;
+        if (error) {
+          console.error('Failed to fetch lesson:', error);
+          setError(error.message);
+          return;
+        }
+
+        if (!data) {
+          setError('Lesson not found');
+          return;
+        }
+
+        setLesson(data);
+      } catch (err) {
+        console.error('Error fetching lesson:', err);
+        setError('Failed to load lesson');
+      } finally {
+        setLoading(false);
       }
-
-      setLesson(data);
     };
 
     fetchLesson();
   }, [lessonId]);
 
-  if (!lesson || progressLoading) {
-    return <div>Loading...</div>;
+  if (loading || progressLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center py-12">
+              <div className="animate-pulse">
+                <div className="h-8 bg-muted rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !lesson) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-8">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" onClick={() => navigate('/chapters')} className="mb-6">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Lessons
+            </Button>
+            <div className="text-center py-12">
+              <h1 className="text-4xl font-bold text-foreground mb-4">Lesson Not Found</h1>
+              <p className="text-muted-foreground mb-6">
+                {error || 'The lesson you are looking for does not exist.'}
+              </p>
+              <Button onClick={() => navigate('/dashboard')} className="gradient-primary">
+                Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   const completed = isCompleted(lesson.id);
