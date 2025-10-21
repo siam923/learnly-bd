@@ -15,8 +15,7 @@ const ChapterView = () => {
   }
 
   const handleLessonClick = (lessonId: string) => {
-    setCurrentLesson(lessonId);
-    navigate('/lesson');
+    navigate(`/lesson/${lessonId}`);
   };
 
   return (
