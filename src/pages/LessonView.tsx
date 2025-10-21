@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { LessonRenderer } from '@/components/lesson/LessonRenderer';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
-import { useLessonProgress } from '@/hooks/useLessonProgress';
 
 interface Lesson {
   id: string;
@@ -15,111 +13,138 @@ interface Lesson {
   duration: number;
 }
 
+// Static demo lessons
+const DEMO_LESSONS: Record<string, Lesson> = {
+  'periodic-table': {
+    id: 'periodic-table',
+    title: 'The Periodic Table',
+    duration: 30,
+    content: `# The Periodic Table of Elements
+
+## Introduction
+
+The periodic table is a tabular arrangement of chemical elements organized by their atomic number, electron configuration, and recurring chemical properties.
+
+## History
+
+The periodic table was first proposed by **Dmitri Mendeleev** in 1869. He arranged elements by atomic weight and noticed patterns in their properties.
+
+### Key Facts
+
+- Contains **118 confirmed elements**
+- Organized into groups (columns) and periods (rows)
+- Elements in the same group share similar properties
+
+## Structure
+
+The table consists of:
+
+1. **Metals** - Good conductors of heat and electricity
+2. **Nonmetals** - Poor conductors, often gases at room temperature
+3. **Metalloids** - Properties between metals and nonmetals
+
+## Mathematical Notation
+
+The electron configuration of Hydrogen: $1s^1$
+
+The mass-energy equivalence: $E = mc^2$
+
+## Code Example
+
+\`\`\`javascript
+const elements = {
+  hydrogen: { symbol: 'H', atomicNumber: 1 },
+  helium: { symbol: 'He', atomicNumber: 2 }
+};
+\`\`\`
+
+## Conclusion
+
+Understanding the periodic table is fundamental to chemistry and helps predict element behavior and chemical reactions.`
+  },
+  'default': {
+    id: 'default',
+    title: 'Interactive Learning Demo',
+    duration: 25,
+    content: `# Welcome to Interactive Learning
+
+## About This Lesson
+
+This is a demonstration of our **MDX-powered** lesson system with rich content support.
+
+## Features
+
+### Rich Text Formatting
+
+You can use *italic*, **bold**, and ***bold italic*** text. You can also use inline \`code\` formatting.
+
+### Lists
+
+**Ordered Lists:**
+
+1. First item
+2. Second item
+3. Third item
+
+**Unordered Lists:**
+
+- Chemistry
+- Physics
+- Mathematics
+- Biology
+
+### Mathematical Equations
+
+Inline math: The famous equation $E = mc^2$ shows mass-energy equivalence.
+
+Block equation:
+
+$$
+\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}
+$$
+
+### Code Blocks
+
+\`\`\`python
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+print(fibonacci(10))
+\`\`\`
+
+### Blockquotes
+
+> "Education is the most powerful weapon which you can use to change the world."
+> - Nelson Mandela
+
+## Interactive Components
+
+Our platform supports interactive elements like quizzes, simulations, and visualizations to make learning engaging and effective.
+
+### Key Concepts
+
+- **Active Learning**: Engage with content through interaction
+- **Visual Learning**: Complex concepts made simple with diagrams
+- **Practice**: Reinforce learning with exercises
+
+## Conclusion
+
+This lesson demonstrates the power of combining markdown, mathematics, code, and interactive elements for comprehensive learning experiences.`
+  }
+};
+
 const LessonView = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
-  const [lesson, setLesson] = useState<Lesson | null>(null);
-  const [userId, setUserId] = useState<string | undefined>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { isCompleted, markComplete, loading: progressLoading } = useLessonProgress(userId);
+  const [completed, setCompleted] = useState(false);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUserId(user?.id);
-    };
-    getUser();
-  }, []);
+  // Get static lesson based on ID or use default
+  const lesson = DEMO_LESSONS[lessonId || 'default'] || DEMO_LESSONS['default'];
 
-  useEffect(() => {
-    if (!lessonId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchLesson = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const { data, error } = await supabase
-          .from('lessons')
-          .select('*')
-          .eq('id', lessonId)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Failed to fetch lesson:', error);
-          setError(error.message);
-          return;
-        }
-
-        if (!data) {
-          setError('Lesson not found');
-          return;
-        }
-
-        setLesson(data);
-      } catch (err) {
-        console.error('Error fetching lesson:', err);
-        setError('Failed to load lesson');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLesson();
-  }, [lessonId]);
-
-  if (loading || progressLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container py-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center py-12">
-              <div className="animate-pulse">
-                <div className="h-8 bg-muted rounded w-3/4 mx-auto mb-4"></div>
-                <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  if (error || !lesson) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container py-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => navigate('/chapters')} className="mb-6">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Lessons
-            </Button>
-            <div className="text-center py-12">
-              <h1 className="text-4xl font-bold text-foreground mb-4">Lesson Not Found</h1>
-              <p className="text-muted-foreground mb-6">
-                {error || 'The lesson you are looking for does not exist.'}
-              </p>
-              <Button onClick={() => navigate('/dashboard')} className="gradient-primary">
-                Go to Dashboard
-              </Button>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  const completed = isCompleted(lesson.id);
-
-  const handleComplete = async () => {
-    await markComplete(lesson.id);
-    navigate('/chapters');
+  const handleComplete = () => {
+    setCompleted(true);
   };
 
   return (
