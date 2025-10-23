@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { LessonRenderer } from '@/components/lesson/LessonRenderer';
-import { Quiz } from '@/components/interactive/Quiz';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -58,6 +57,31 @@ const elements = {
   helium: { symbol: 'He', atomicNumber: 2 }
 };
 \`\`\`
+
+## Test Your Knowledge
+
+<Quiz questions={${JSON.stringify([
+  {
+    question: "Who first proposed the periodic table?",
+    options: ["Albert Einstein", "Dmitri Mendeleev", "Marie Curie", "Isaac Newton"],
+    correctAnswer: 1
+  },
+  {
+    question: "How many confirmed elements are in the periodic table?",
+    options: ["92 elements", "108 elements", "118 elements", "126 elements"],
+    correctAnswer: 2
+  },
+  {
+    question: "Which of these is a property of metals?",
+    options: [
+      "Poor conductors of electricity",
+      "Usually gases at room temperature",
+      "Good conductors of heat and electricity",
+      "Cannot be shaped or molded"
+    ],
+    correctAnswer: 2
+  }
+])}} />
 
 ## Conclusion
 
@@ -182,48 +206,9 @@ const LessonView = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-8 space-y-8"
+            className="mb-8"
           >
             <LessonRenderer content={lesson.content} />
-            
-            {/* Interactive Quiz Section */}
-            <div className="mt-8">
-              <h2 className="text-2xl font-bold mb-4">Test Your Knowledge</h2>
-              <Quiz
-                questions={[
-                  {
-                    question: "Who first proposed the periodic table?",
-                    options: [
-                      "Albert Einstein",
-                      "Dmitri Mendeleev",
-                      "Marie Curie",
-                      "Isaac Newton"
-                    ],
-                    correctAnswer: 1
-                  },
-                  {
-                    question: "How many confirmed elements are in the periodic table?",
-                    options: [
-                      "92 elements",
-                      "108 elements",
-                      "118 elements",
-                      "126 elements"
-                    ],
-                    correctAnswer: 2
-                  },
-                  {
-                    question: "Which of these is a property of metals?",
-                    options: [
-                      "Poor conductors of electricity",
-                      "Usually gases at room temperature",
-                      "Good conductors of heat and electricity",
-                      "Cannot be shaped or molded"
-                    ],
-                    correctAnswer: 2
-                  }
-                ]}
-              />
-            </div>
           </motion.div>
 
           {!completed && (

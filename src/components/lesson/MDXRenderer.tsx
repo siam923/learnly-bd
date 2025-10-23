@@ -3,7 +3,9 @@
  * This component can be used in any part of the application to render MDX
  */
 
-import ReactMarkdown from "react-markdown";
+import { useState, useEffect } from "react";
+import { evaluate } from "@mdx-js/mdx";
+import * as runtime from "react/jsx-runtime";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
@@ -19,15 +21,32 @@ interface MDXRendererProps {
  * Use this component wherever you need to display lesson content
  */
 export const MDXRenderer = ({ content, className = "" }: MDXRendererProps) => {
+  const [MDXContent, setMDXContent] = useState<any>(null);
+
+  useEffect(() => {
+    evaluate(content, {
+      ...runtime as any,
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+      development: false,
+    }).then((result) => {
+      setMDXContent(() => result.default);
+    }).catch((error) => {
+      console.error("Error evaluating MDX:", error);
+    });
+  }, [content]);
+
+  if (!MDXContent) {
+    return (
+      <div className={`prose prose-sm dark:prose-invert max-w-none ${className}`}>
+        <div>Loading content...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={`prose prose-sm dark:prose-invert max-w-none ${className}`}>
-      <ReactMarkdown
-        remarkPlugins={[remarkMath]}
-        rehypePlugins={[rehypeKatex]}
-        components={MDX_COMPONENTS as any}
-      >
-        {content}
-      </ReactMarkdown>
+      <MDXContent components={MDX_COMPONENTS} />
     </div>
   );
 };
